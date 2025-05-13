@@ -1,0 +1,144 @@
+
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Fan Book</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+        .mypic {
+            width: 100%;
+            height: 300px;
+            background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://wallpaperaccess.com/full/6992936.jpg');
+            background-position: center;
+            background-size: cover;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mypost {
+            width: 95%;
+            max-width: 500px;
+            margin: 20px auto 0px auto;
+            padding: 20px;
+            box-shadow: 0px 0px 3px 0px black;
+        }
+
+        .mypost > button {
+            margin-top: 15px;
+        }
+
+        .mycard {
+            width: 95%;
+            max-width: 500px;
+            margin: auto;
+        }
+
+        .mycard > .card {
+            margin-top: 10px;
+            margin-bottom: 10px
+        }
+    </style>
+    <script>
+        $(document).ready(function () {
+            listing();
+        });
+
+        function listing() {
+            $.ajax({
+                type: "GET",
+                url: "/homework",
+                data: {},
+                success: function (response) {
+                    let articles = response["articles"];
+
+                    for (let i = 0; i < articles.length; i++) {
+                        let name = articles[i]["name"];
+                        let comment = articles[i]["comment"];
+                        
+                        let temp_html = `
+                            <div class="card">
+                                <div class="card-body">
+                                    <blockquote class="blockquote mb-0">
+                                        <p>${comment}</p>
+                                        <footer class="blockquote-footer">${name}</footer>
+                                    </blockquote>
+                                </div>
+                            </div>
+                        `;
+                        
+                        $("#cardq").append(temp_html);
+                    }
+                }
+            });
+        }
+
+        function posting() {
+            let name = $("#nameNya").val();
+            if (!name) {
+                return alert('Kamu belum memasukan name')
+            }
+            let comment = $("#commentNya").val();
+            if (!comment) {
+                return alert('Kamu belum memasukan deskripsi')
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "/homework",
+                data: {
+                    name_give: name,
+                    comment_give: comment
+                },
+                success: function (response) {
+                    alert(response["msg"]);
+                    window.location.reload();
+                }
+            });
+        }
+        
+    </script>
+</head>
+<body>
+    <div class="mypic">
+        <h1>Fan Book Site</h1>
+        <p>Current Temperature: <span id="temp"></span>degrees</p>
+    </div>
+
+    <div class="mypost">
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="nameNya" id="floatingInput" placeholder="Enter Your Nickname Here">
+            <label for="floatingInput">Nickname</label>
+        </div>
+        <div class="form-floating">
+            <textarea class="form-control" placeholder="Fan Message" id="commentNya" id="floatingTextarea"></textarea>
+            <label for="floatingTextarea">Fan Message</label>
+        </div>
+        <button type="button" class="btn btn-dark" onclick="posting()">Leave a Fan Message</button>
+    </div>
+
+    <div class="mycard" id="cardq">
+
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            $.ajax({
+                type: 'GET',
+                url: 'http://spartacodingclub.shop/sparta_api/weather/pasuruan',
+                data: {},
+                success: function(response) {
+                    $('#temp').text(response['temp']);
+                }
+            });
+        });
+
+    </script>
+</body>
+</html>
